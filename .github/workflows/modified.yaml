@@ -55,9 +55,3 @@ jobs:
       - name: Run notebooks
         run: |
           pytest --suppress-no-test-exit-code --no-cov -rA --durations=0 -vv testing/test_notebooks.py
-
-      - name: Upload CIntent Artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-          name: ${{ env.CINTENT_ARTIFACT_NAME }}
-          path: ${{ env.CINTENT_LOGS }}
