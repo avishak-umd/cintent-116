@@ -9,8 +9,6 @@ defaults:
 on:
   # Trigger the workflow on manual dispatch and once a week
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 0'
 
 jobs:
   test_notebooks:
