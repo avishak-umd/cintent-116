@@ -1,6 +1,6 @@
 # This workflows executes all example notebooks to ensure they are up-to-date.
 
-name: test_all_notebooks
+name: test_all_notebooks_cimonitor
 
 defaults:
   run:
