@@ -6,9 +6,13 @@ defaults:
   run:
     shell: bash  # To override PowerShell on Windows
 
-on:
-  # Trigger the workflow on manual dispatch and once a week
-  workflow_dispatch:
+# CINTENT >> MANUAL TRIGGER
+# on:
+#   # Trigger the workflow on manual dispatch and once a week
+#   workflow_dispatch:
+#   schedule:
+#     - cron: '0 0 * * 0'
+on: [repository_dispatch, workflow_dispatch]
 
 jobs:
   test_notebooks:
@@ -18,7 +22,15 @@ jobs:
       fail-fast: false  # Continue to run other builds despite a failure
       matrix:
         os: [ubuntu-latest]
+
+        # CINTENT >> REMOVE_MATRIX
+        # python-version: [ '3.9', '3.10', '3.11', '3.12' ]
         python-version: [ '3.12' ]
+
+        # CINTENT >> REMOVE_MATRIX
+        # include: # Run windows tests on only one python version
+        #   - os: windows-latest
+        #     python-version:  '3.11'
 
     steps:
       - name: Checkout code
@@ -28,6 +40,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
 
       - name: Install dependencies
         run: |
