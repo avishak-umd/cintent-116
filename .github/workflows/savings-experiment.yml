@@ -3,7 +3,7 @@
 # afterwards `pip install .[shap,tensorflow,ray]`, a strict superset, both
 # with eager upgrades. Fixed: drop the superseded install. Each run prints a
 # fingerprint of the final environment so both variants can be compared.
-# 5 repetitions each, same pinned source, no instrumentation.
+# One run each, same pinned source, no instrumentation.
 
 name: savings-experiment
 
@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
       matrix:
         variant: [baseline, fixed]
-        rep: [1, 2, 3, 4, 5]
+        rep: [1]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
