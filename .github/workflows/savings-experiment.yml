@@ -1,0 +1,50 @@
+# Measured-savings experiment for the alibi install bottleneck.
+# The install step runs `pip install .[shap,tensorflow]` and immediately
+# afterwards `pip install .[shap,tensorflow,ray]`, a strict superset, both
+# with eager upgrades. Fixed: drop the superseded install. Each run prints a
+# fingerprint of the final environment so both variants can be compared.
+# 5 repetitions each, same pinned source, no instrumentation.
+
+name: savings-experiment
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - savings-experiment
+
+jobs:
+  test_notebooks:
+    name: ${{ matrix.variant }}-rep${{ matrix.rep }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [baseline, fixed]
+        rep: [1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade --upgrade-strategy eager -r requirements/dev.txt -r testing/requirements.txt
+          if [ "${{ matrix.variant }}" = "baseline" ]; then
+            python -m pip install --upgrade --upgrade-strategy eager .[shap,tensorflow]
+          fi
+          python -m pip install --upgrade --upgrade-strategy eager .[shap,tensorflow,ray]
+          python -m spacy download en_core_web_md
+          python -m pip freeze
+      - name: Environment fingerprint
+        run: |
+          echo "packages: $(python -m pip freeze | wc -l)"
+          echo "fingerprint: $(python -m pip freeze | grep -v '^alibi' | sort | sha256sum)"
